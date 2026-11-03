@@ -51,6 +51,7 @@ button.ghost { background: transparent; color: var(--gold); border: 1px solid va
 .ms-f img { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; border: 1px solid #ccc; }
 .ms-f img, .ms-f a { cursor: pointer; }
 .lb { position: fixed; inset: 0; z-index: 20; background: rgba(0,0,0,.88); display: grid; place-items: center; gap: 10px; padding: 24px; cursor: zoom-out; }
+.lb[hidden] { display: none; }
 .lb img { max-width: 100%; max-height: 82vh; border: 6px solid #fff; box-shadow: 0 20px 50px rgba(0,0,0,.6); }
 .lb span { color: #ccc; font-size: 13px; font-family: Verdana, sans-serif; }
 .ms-all { margin: 8px 0 0; text-align: right; font-size: 10px; }
@@ -154,7 +155,7 @@ function refresh() {
 refresh();
 
 // When a newer version of this page is published, reload into it (answers come back from this browser's save).
-const BUILD = '1793683828';
+const BUILD = '1793686776';
 setInterval(async () => {
   try {
     const t = await fetch(location.pathname + '?b=' + Date.now(), {cache: 'no-store'}).then(r => r.text());
