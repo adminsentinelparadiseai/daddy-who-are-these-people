@@ -110,6 +110,16 @@ function refresh() {
 }
 refresh();
 
+// When a newer version of this page is published, reload into it (answers come back from this browser's save).
+const BUILD = '1793682233';
+setInterval(async () => {
+  try {
+    const t = await fetch(location.pathname + '?b=' + Date.now(), {cache: 'no-store'}).then(r => r.text());
+    const m = t.match(/const BUILD = '(\d+)'/);
+    if (m && m[1] !== BUILD && !document.activeElement.matches('input, textarea')) { remember(); location.reload(); }
+  } catch (e) {}
+}, 30000);
+
 document.getElementById('copy').addEventListener('click', () => {
   if (!out.value) { statusEl.textContent = 'Type at least one name first.'; return; }
   const done = () => { statusEl.textContent = 'Copied.'; statusEl.className = 'status ok'; };
