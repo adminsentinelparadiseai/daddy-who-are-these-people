@@ -42,7 +42,7 @@ button.ghost { background: transparent; color: var(--gold); border: 1px solid va
   <header>
     <span class="eyebrow">Travis Kr8s · From Beats to the Boardroom</span>
     <h1>Daddy, Who Are These People?</h1>
-    <p>Type who's in each picture so they show up on screen the moment the narrator says their name. Skip any that are just you or no one important. Your answers save as you type. When you're done, tap <strong>Send to Desirae</strong>.</p>
+    <p>Type who's in each picture so they show up on screen the moment the narrator says their name. Skip any that are just you or no one important. Your answers save as you type. When you're done, tap <strong>Send to Mama</strong>.</p>
     <div class="names" id="names"></div>
   </header>
   <div class="grid" id="grid"></div>
@@ -51,7 +51,7 @@ button.ghost { background: transparent; color: var(--gold); border: 1px solid va
     <textarea id="notes" rows="3" placeholder="e.g. Use the clip of me on stage for the Atlanta part"></textarea>
   </div>
   <div class="send">
-    <div class="row"><button id="send" type="button">Send to Desirae</button><button id="copy" type="button" class="ghost">Copy my answers</button><span class="status" id="status">0 photos tagged</span></div>
+    <div class="row"><button id="send" type="button">Send to Mama</button><button id="copy" type="button" class="ghost">Copy my answers</button><span class="status" id="status">0 photos tagged</span></div>
     <textarea id="out" readonly aria-label="Your answers"></textarea>
   </div>
 </div>
@@ -109,7 +109,7 @@ async function send(manual) {
   const body = new URLSearchParams({'entry.1284993694': (manual ? '[SENT] ' : '[autosave] ') + out.value});
   try {
     await fetch(ENDPOINT, {method: 'POST', mode: 'no-cors', body});
-    statusEl.textContent = items.length + (items.length === 1 ? ' photo' : ' photos') + ' saved.' + (manual ? ' Desirae has them.' : '');
+    statusEl.textContent = items.length + (items.length === 1 ? ' photo' : ' photos') + ' saved.' + (manual ? ' Mama has them.' : '');
     statusEl.className = 'status ok';
   } catch (e) { statusEl.textContent = 'Couldn’t send. Check your connection, or use Copy my answers.'; statusEl.className = 'status'; }
 }
