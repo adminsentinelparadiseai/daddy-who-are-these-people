@@ -1,7 +1,7 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex"></head><body style="margin:0">
 <title>Daddy, Who Are These People?</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Montserrat:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Montserrat:wght@400;500;700&family=Caveat:wght@600&display=swap">
 <style>
 /* Single dark look to match the reel: black, gold, white. Photo grid with one name field under each picture. */
 :root {
@@ -18,7 +18,7 @@ header p { margin: 0; color: var(--muted); }
 .names { display: flex; flex-wrap: wrap; gap: 8px; }
 .names span { border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; font-size: 13px; color: var(--fg); }
 .names span.done { border-color: var(--gold); color: var(--gold); }
-.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr)); gap: 16px; }
 figure { margin: 0; background: var(--card); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; display: grid; grid-template-rows: auto 1fr; }
 figure.tagged { border-color: var(--gold); }
 .ph { position: relative; aspect-ratio: 4 / 5; background: #000; }
@@ -35,16 +35,27 @@ button { background: var(--gold); color: #17140f; border: 0; border-radius: 8px;
 .status.ok { color: var(--ok); }
 button.ghost { background: transparent; color: var(--gold); border: 1px solid var(--gold); }
 #out { min-height: 90px; font-size: 13px; }
-@media (prefers-reduced-motion: no-preference) { figure { transition: border-color .2s; } }
+.top { display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; justify-content: space-between; }
+.top header { flex: 1 1 280px; min-width: 0; }
+.wrap > * { min-width: 0; }
+.note { flex: 0 0 auto; width: min(260px, 100%); background: #f7e7a6; color: #3a2e12; padding: 18px 20px 16px; border-radius: 2px; transform: rotate(2.5deg);
+  box-shadow: 0 10px 24px rgba(0,0,0,.45); font-family: 'Caveat', 'Bradley Hand', cursive; font-size: 24px; line-height: 1.25; position: relative; }
+.note::before { content: ""; position: absolute; top: -10px; left: 50%; width: 80px; height: 22px; transform: translateX(-50%) rotate(-3deg); background: rgba(255,255,255,.45); }
+.note .sig { display: block; text-align: right; margin-top: 8px; }
+@media (prefers-reduced-motion: no-preference) { figure { transition: border-color .2s; } .note { animation: sway 4s ease-in-out infinite alternate; } }
+@keyframes sway { from { transform: rotate(2.5deg); } to { transform: rotate(0.5deg); } }
 </style>
 
 <div class="wrap">
+  <div class="top">
   <header>
     <span class="eyebrow">Travis Kr8s · From Beats to the Boardroom</span>
     <h1>Daddy, Who Are These People?</h1>
     <p>Type who's in each picture so they show up on screen the moment the narrator says their name. Leave it blank if it's obviously just you. If you don't want a photo used, type <strong>don't use</strong>. Your answers save as you type. When you're done, tap <strong>Send to Mama</strong>.</p>
     <div class="names" id="names"></div>
   </header>
+  <aside class="note" aria-label="A note from Mama">Sorry I missed your call, I was putting my kid down 💛<span class="sig">— Mama</span></aside>
+  </div>
   <div class="grid" id="grid"></div>
   <div>
     <label for="notes">Anything else? (videos to use, people I missed)</label>
@@ -78,13 +89,21 @@ PHOTOS.forEach((p, i) => {
 });
 document.getElementById('notes').addEventListener('input', e => { notes = e.target.value; refresh(); queueSave('_notes'); });
 
+// Bring back his answers after a refresh: what this browser saved last, else what he had already sent.
+const PREFILL = {"263D106F-F064-4B9D-891E-B3A9AF0111E6.jpeg":"Take this picture out","4f4c3919-2aca-4526-ad8e-cb833ad588e7.JPG":"CBBS factory","6P8A9534.jpeg":"Stephen glickman","870FFA97-FD30-447C-A050-73056537F4EE.JPG":"Ryan Seacrest","IMG_0208.jpg":"Avila Brothers, Billy Ray Cyrus","IMG_0211.jpg":"Avila Brothers, Loomis , ranc  from 1500","IMG_0212.jpg":"Me and Jermaine Dupri","IMG_0213.jpg":"Me and Floyd Mayweather","IMG_0214.jpg":"Me and Lil Kym","IMG_0215.jpg":"Me and Joe lamonte","IMG_0216.jpg":"In my office","IMG_0217.jpg":"Me and safaree Samuels","IMG_0218.jpg":"Me and Tony Maserati","IMG_0219.jpg":"Me and Master p","IMG_0354.jpeg":"Me and Baby Soldier","IMG_0621.jpeg":"Me and Toosii","IMG_0732.jpeg":"Studio camp in Miami","IMG_0843.jpeg":"Me scoring a movie","IMG_0850.jpeg":"Me and Benjamin Crump","IMG_1086.jpg":"Diane Warren and Loomis","IMG_1520.jpeg":"Me and Skip Saylor","IMG_2204.jpeg":"Safare , Lommis, travis","IMG_3080.jpg":"Me, Eric Bellinger, and Dave Cash","IMG_4552.PNG":"Me and Connor from spy kid movie","IMG_4799.jpeg":"Me the Hollywood Mogul","IMG_5327.jpg":"Flo Rida","IMG_7400.jpeg":"No body","e35a2c24-eb6d-49dc-9e50-d1fd2be0c483.JPG":"Joe Gatlin"};
+let saved = null; try { saved = JSON.parse(localStorage.getItem('tags') || 'null'); } catch (e) {}
+const start = saved && saved.tags ? saved.tags : PREFILL;
+PHOTOS.forEach(p => { if (start[p.id]) { p.inp.value = start[p.id]; tags[p.id] = start[p.id]; p.fig.classList.add('tagged'); } });
+if (saved && saved.notes) { notes = saved.notes; document.getElementById('notes').value = notes; }
+function remember() { try { localStorage.setItem('tags', JSON.stringify({tags, notes})); } catch (e) {} }
+
 function refresh() {
   const lines = PHOTOS.map((p, i) => tags[p.id] ? `#${i + 1} (${p.id}): ${tags[p.id]}` : '').filter(Boolean);
   if (notes.trim()) lines.push('Notes: ' + notes.trim());
   out.value = lines.length ? 'Photo tags for the reel\n' + lines.join('\n') : '';
   const n = PHOTOS.filter(p => tags[p.id]).length;
   statusEl.textContent = n + (n === 1 ? ' photo tagged' : ' photos tagged');
-  statusEl.className = 'status';
+  statusEl.className = 'status'; remember();
   const all = Object.values(tags).join(' ').toLowerCase();
   const box = document.getElementById('names'); box.textContent = '';
   NAMES.slice(0, 11).forEach(n => { const s = document.createElement('span'); s.textContent = n; if (all.includes(n.toLowerCase().replace(/[.']/g, '').split(' ')[0].slice(0, 4))) s.className = 'done'; box.appendChild(s); });
